@@ -652,7 +652,7 @@ abstract class BaseSimpleActivity : AppCompatActivity() {
     }
 
     fun handleCustomizeColorsClick() {
-        if (isOrWasThankYouInstalled()) {
+        if (true) {
             startCustomizationActivity()
         } else {
             FeatureLockedDialog(this) {}

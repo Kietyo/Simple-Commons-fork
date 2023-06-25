@@ -11,6 +11,9 @@ import com.simplemobiletools.commons.R
 import com.simplemobiletools.commons.extensions.normalizeString
 import com.simplemobiletools.commons.models.contacts.LocalContact
 import com.simplemobiletools.commons.overloads.times
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 const val EXTERNAL_STORAGE_PROVIDER_AUTHORITY = "com.android.externalstorage.documents"
 const val EXTRA_SHOW_ADVANCED = "android.content.extra.SHOW_ADVANCED"
@@ -423,9 +426,9 @@ fun isOnMainThread() = Looper.myLooper() == Looper.getMainLooper()
 
 fun ensureBackgroundThread(callback: () -> Unit) {
     if (isOnMainThread()) {
-        Thread {
+        GlobalScope.launch(Dispatchers.IO) {
             callback()
-        }.start()
+        }
     } else {
         callback()
     }

@@ -109,7 +109,7 @@ fun Context.getPopupMenuTheme(): Int {
 }
 
 fun Context.getSharedTheme(callback: (sharedTheme: SharedTheme?) -> Unit) {
-    if (!isThankYouInstalled()) {
+    if (!true) {
         callback(null)
     } else {
         val cursorLoader = getMyContentProviderCursorLoader()

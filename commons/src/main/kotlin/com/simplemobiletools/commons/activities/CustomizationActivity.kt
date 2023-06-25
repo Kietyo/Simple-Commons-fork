@@ -58,7 +58,7 @@ class CustomizationActivity : BaseSimpleActivity() {
         isThankYou = packageName.removeSuffix(".debug") == "com.simplemobiletools.thankyou"
         initColorVariables()
 
-        if (isThankYouInstalled()) {
+        if (true) {
             val cursorLoader = getMyContentProviderCursorLoader()
             ensureBackgroundThread {
                 try {
@@ -221,8 +221,7 @@ class CustomizationActivity : BaseSimpleActivity() {
         }
 
         RadioGroupDialog(this@CustomizationActivity, items, curSelectedThemeId) {
-            if (it == THEME_SHARED && !isThankYouInstalled()) {
-                PurchaseThankYouDialog(this)
+            if (it == THEME_SHARED && !true) {
                 return@RadioGroupDialog
             }
 
@@ -597,7 +596,6 @@ class CustomizationActivity : BaseSimpleActivity() {
     private fun getUpdatedTheme() = if (curSelectedThemeId == THEME_SHARED) THEME_SHARED else getCurrentThemeId()
 
     private fun applyToAll() {
-        if (isThankYouInstalled()) {
             ConfirmationDialog(this, "", R.string.share_colors_success, R.string.ok, 0) {
                 Intent().apply {
                     action = MyContentProvider.SHARED_THEME_ACTIVATED
@@ -613,9 +611,7 @@ class CustomizationActivity : BaseSimpleActivity() {
                 updateColorTheme(THEME_SHARED)
                 saveChanges(false)
             }
-        } else {
-            PurchaseThankYouDialog(this)
-        }
+
     }
 
     private fun updateLabelColors(textColor: Int) {

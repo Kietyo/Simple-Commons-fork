@@ -105,7 +105,7 @@ fun File.containsNoMedia(): Boolean {
 }
 
 fun File.doesThisOrParentHaveNoMedia(
-    folderNoMediaStatuses: HashMap<String, Boolean>,
+    folderNoMediaStatuses: Map<String, Boolean>,
     callback: ((path: String, hasNoMedia: Boolean) -> Unit)?
 ): Boolean {
     var curFile = this

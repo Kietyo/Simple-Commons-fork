@@ -6,6 +6,8 @@ import com.simplemobiletools.commons.R
 import com.simplemobiletools.commons.extensions.getInternalStoragePath
 import com.simplemobiletools.commons.extensions.getSDCardPath
 import com.simplemobiletools.commons.extensions.getSharedPrefs
+import com.simplemobiletools.commons.models.PackedInt
+import com.simplemobiletools.commons.models.toPackedInt
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -252,25 +254,25 @@ open class BaseConfig(val context: Context) {
         get() = prefs.getInt(LAST_CONFLICT_RESOLUTION, CONFLICT_SKIP)
         set(lastConflictResolution) = prefs.edit().putInt(LAST_CONFLICT_RESOLUTION, lastConflictResolution).apply()
 
-    var sorting: Int
-        get() = prefs.getInt(SORT_ORDER, context.resources.getInteger(R.integer.default_sorting))
-        set(sorting) = prefs.edit().putInt(SORT_ORDER, sorting).apply()
+    var sorting: PackedInt
+        get() = prefs.getInt(SORT_ORDER, context.resources.getInteger(R.integer.default_sorting)).toPackedInt()
+        set(sorting) = prefs.edit().putInt(SORT_ORDER, sorting.data).apply()
 
-    fun saveCustomSorting(path: String, value: Int) {
+    fun saveCustomSorting(path: String, value: PackedInt) {
         if (path.isEmpty()) {
             sorting = value
         } else {
-            prefs.edit().putInt(SORT_FOLDER_PREFIX + path.toLowerCase(), value).apply()
+            prefs.edit().putInt(SORT_FOLDER_PREFIX + path.lowercase(Locale.getDefault()), value.data).apply()
         }
     }
 
-    fun getFolderSorting(path: String) = prefs.getInt(SORT_FOLDER_PREFIX + path.toLowerCase(), sorting)
+    fun getFolderSorting(path: String) = PackedInt(prefs.getInt(SORT_FOLDER_PREFIX + path.lowercase(Locale.getDefault()), sorting.data))
 
     fun removeCustomSorting(path: String) {
-        prefs.edit().remove(SORT_FOLDER_PREFIX + path.toLowerCase()).apply()
+        prefs.edit().remove(SORT_FOLDER_PREFIX + path.lowercase(Locale.getDefault())).apply()
     }
 
-    fun hasCustomSorting(path: String) = prefs.contains(SORT_FOLDER_PREFIX + path.toLowerCase())
+    fun hasCustomSorting(path: String) = prefs.contains(SORT_FOLDER_PREFIX + path.lowercase(Locale.getDefault()))
 
     var hadThankYouInstalled: Boolean
         get() = prefs.getBoolean(HAD_THANK_YOU_INSTALLED, false)
@@ -383,7 +385,7 @@ open class BaseConfig(val context: Context) {
     private fun getDefaultDateFormat(): String {
         val format = DateFormat.getDateFormat(context)
         val pattern = (format as SimpleDateFormat).toLocalizedPattern()
-        return when (pattern.toLowerCase().replace(" ", "")) {
+        return when (pattern.lowercase(Locale.getDefault()).replace(" ", "")) {
             "d.M.y" -> DATE_FORMAT_ONE
             "dd/mm/y" -> DATE_FORMAT_TWO
             "mm/dd/y" -> DATE_FORMAT_THREE

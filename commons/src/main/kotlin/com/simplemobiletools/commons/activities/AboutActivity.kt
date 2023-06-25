@@ -12,7 +12,6 @@ import androidx.core.net.toUri
 import androidx.core.view.isEmpty
 import com.simplemobiletools.commons.R
 import com.simplemobiletools.commons.dialogs.ConfirmationAdvancedDialog
-import com.simplemobiletools.commons.dialogs.RateStarsDialog
 import com.simplemobiletools.commons.extensions.*
 import com.simplemobiletools.commons.helpers.*
 import com.simplemobiletools.commons.models.FAQItem
@@ -185,27 +184,16 @@ class AboutActivity : BaseSimpleActivity() {
 
             setOnClickListener {
                 if (baseConfig.wasBeforeRateShown) {
-                    launchRateUsPrompt()
                 } else {
                     baseConfig.wasBeforeRateShown = true
                     val msg = "${getString(R.string.before_rate_read_faq)}\n\n${getString(R.string.make_sure_latest)}"
                     ConfirmationAdvancedDialog(this@AboutActivity, msg, 0, R.string.read_faq, R.string.skip) { success ->
                         if (success) {
                             launchFAQActivity()
-                        } else {
-                            launchRateUsPrompt()
                         }
                     }
                 }
             }
-        }
-    }
-
-    private fun launchRateUsPrompt() {
-        if (baseConfig.wasAppRated) {
-            redirectToRateUs()
-        } else {
-            RateStarsDialog(this@AboutActivity)
         }
     }
 

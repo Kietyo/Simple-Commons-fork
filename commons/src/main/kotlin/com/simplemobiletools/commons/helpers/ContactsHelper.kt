@@ -67,7 +67,9 @@ class ContactsHelper(val context: Context) {
             }
 
             if (context.baseConfig.mergeDuplicateContacts && ignoredContactSources.isEmpty() && !getAll) {
-                tempContacts.filter { displayContactSources.contains(it.source) }.groupBy { it.getNameToDisplay().toLowerCase() }.values.forEach { it ->
+                tempContacts.filter { displayContactSources.contains(it.source) }.groupBy {
+                    it.getNameToDisplay().lowercase(Locale.getDefault())
+                }.values.forEach { it ->
                     if (it.size == 1) {
                         resultContacts.add(it.first())
                     } else {
@@ -886,10 +888,10 @@ class ContactsHelper(val context: Context) {
     private fun getSortString(): String {
         val sorting = context.baseConfig.sorting
         return when {
-            sorting and SORT_BY_FIRST_NAME != 0 -> "${CommonDataKinds.StructuredName.GIVEN_NAME} COLLATE NOCASE"
-            sorting and SORT_BY_MIDDLE_NAME != 0 -> "${CommonDataKinds.StructuredName.MIDDLE_NAME} COLLATE NOCASE"
-            sorting and SORT_BY_SURNAME != 0 -> "${CommonDataKinds.StructuredName.FAMILY_NAME} COLLATE NOCASE"
-            sorting and SORT_BY_FULL_NAME != 0 -> CommonDataKinds.StructuredName.DISPLAY_NAME
+            sorting has SORT_BY_FIRST_NAME -> "${CommonDataKinds.StructuredName.GIVEN_NAME} COLLATE NOCASE"
+            sorting has SORT_BY_MIDDLE_NAME -> "${CommonDataKinds.StructuredName.MIDDLE_NAME} COLLATE NOCASE"
+            sorting has SORT_BY_SURNAME -> "${CommonDataKinds.StructuredName.FAMILY_NAME} COLLATE NOCASE"
+            sorting has SORT_BY_FULL_NAME -> CommonDataKinds.StructuredName.DISPLAY_NAME
             else -> Data.RAW_CONTACT_ID
         }
     }

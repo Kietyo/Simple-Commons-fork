@@ -7,6 +7,9 @@ import com.simplemobiletools.commons.extensions.normalizePhoneNumber
 import com.simplemobiletools.commons.extensions.normalizeString
 import com.simplemobiletools.commons.helpers.*
 import com.simplemobiletools.commons.models.PhoneNumber
+import com.simplemobiletools.commons.models.toPackedInt
+import java.util.*
+import kotlin.collections.ArrayList
 
 data class Contact(
     var id: Int,
@@ -40,28 +43,28 @@ data class Contact(
     var anniversaries = events.filter { it.type == ContactsContract.CommonDataKinds.Event.TYPE_ANNIVERSARY }.map { it.value }.toMutableList() as ArrayList<String>
 
     companion object {
-        var sorting = 0
+        var sorting = 0.toPackedInt()
         var startWithSurname = false
     }
 
     override fun compareTo(other: Contact): Int {
         var result = when {
-            sorting and SORT_BY_FIRST_NAME != 0 -> {
+            sorting has SORT_BY_FIRST_NAME -> {
                 val firstString = firstName.normalizeString()
                 val secondString = other.firstName.normalizeString()
                 compareUsingStrings(firstString, secondString, other)
             }
-            sorting and SORT_BY_MIDDLE_NAME != 0 -> {
+            sorting has SORT_BY_MIDDLE_NAME -> {
                 val firstString = middleName.normalizeString()
                 val secondString = other.middleName.normalizeString()
                 compareUsingStrings(firstString, secondString, other)
             }
-            sorting and SORT_BY_SURNAME != 0 -> {
+            sorting has SORT_BY_SURNAME -> {
                 val firstString = surname.normalizeString()
                 val secondString = other.surname.normalizeString()
                 compareUsingStrings(firstString, secondString, other)
             }
-            sorting and SORT_BY_FULL_NAME != 0 -> {
+            sorting has SORT_BY_FULL_NAME -> {
                 val firstString = getNameToDisplay().normalizeString()
                 val secondString = other.getNameToDisplay().normalizeString()
                 compareUsingStrings(firstString, secondString, other)
@@ -69,7 +72,7 @@ data class Contact(
             else -> compareUsingIds(other)
         }
 
-        if (sorting and SORT_DESCENDING != 0) {
+        if (sorting has SORT_DESCENDING) {
             result *= -1
         }
 
@@ -124,8 +127,8 @@ data class Contact(
     }
 
     fun getBubbleText() = when {
-        sorting and SORT_BY_FIRST_NAME != 0 -> firstName
-        sorting and SORT_BY_MIDDLE_NAME != 0 -> middleName
+        sorting has SORT_BY_FIRST_NAME -> firstName
+        sorting has SORT_BY_MIDDLE_NAME -> middleName
         else -> surname
     }
 
@@ -167,7 +170,7 @@ data class Contact(
         return copy(
             id = 0,
             prefix = "",
-            firstName = getNameToDisplay().toLowerCase(),
+            firstName = getNameToDisplay().lowercase(Locale.getDefault()),
             middleName = "",
             surname = "",
             suffix = "",

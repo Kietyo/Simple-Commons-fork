@@ -24,6 +24,7 @@ import android.provider.BlockedNumberContract.BlockedNumbers
 import android.provider.ContactsContract.CommonDataKinds.BaseTypes
 import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.provider.DocumentsContract
+import android.provider.MediaStore
 import android.provider.MediaStore.*
 import android.provider.OpenableColumns
 import android.provider.Settings
@@ -49,6 +50,7 @@ import com.simplemobiletools.commons.R
 import com.simplemobiletools.commons.helpers.*
 import com.simplemobiletools.commons.models.AlarmSound
 import com.simplemobiletools.commons.models.BlockedNumber
+import com.simplemobiletools.commons.utils.KietLog
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -118,6 +120,7 @@ fun Context.getLatestMediaId(uri: Uri = Files.getContentUri("external")): Long {
             }
         }
     } catch (ignored: Exception) {
+        KietLog.e("ignored exception: $ignored")
     }
     return 0
 }
@@ -143,16 +146,18 @@ private fun Context.queryCursorDesc(
 
 fun Context.getLatestMediaByDateId(uri: Uri = Files.getContentUri("external")): Long {
     val projection = arrayOf(
-        BaseColumns._ID
+        MediaStore.Files.FileColumns._ID
     )
+
     try {
-        val cursor = queryCursorDesc(uri, projection, Images.ImageColumns.DATE_TAKEN, 1)
+        val cursor = queryCursorDesc(uri, projection, MediaStore.Files.FileColumns.DATE_TAKEN, 1)
         cursor?.use {
             if (cursor.moveToFirst()) {
-                return cursor.getLongValue(BaseColumns._ID)
+                return cursor.getLongValue(MediaStore.Files.FileColumns._ID)
             }
         }
     } catch (ignored: Exception) {
+        KietLog.e("exception: $ignored")
     }
     return 0
 }
@@ -444,24 +449,8 @@ fun Context.getUriMimeType(path: String, newUri: Uri): String {
     return mimeType
 }
 
-fun Context.isThankYouInstalled() = isPackageInstalled("com.simplemobiletools.thankyou")
-
-fun Context.isOrWasThankYouInstalled(): Boolean {
-    return when {
-        resources.getBoolean(R.bool.pretend_thank_you_installed) -> true
-        baseConfig.hadThankYouInstalled -> true
-        isThankYouInstalled() -> {
-            baseConfig.hadThankYouInstalled = true
-            true
-        }
-        else -> false
-    }
-}
-
-fun Context.isAProApp() = packageName.startsWith("com.simplemobiletools.") && packageName.removeSuffix(".debug").endsWith(".pro")
-
 fun Context.getCustomizeColorsString(): String {
-    val textId = if (isOrWasThankYouInstalled()) {
+    val textId = if (true) {
         R.string.customize_colors
     } else {
         R.string.customize_colors_locked
@@ -471,7 +460,7 @@ fun Context.getCustomizeColorsString(): String {
 }
 
 fun Context.addLockedLabelIfNeeded(stringId: Int): String {
-    return if (isOrWasThankYouInstalled()) {
+    return if (true) {
         getString(stringId)
     } else {
         "${getString(stringId)} (${getString(R.string.feature_locked)})"
